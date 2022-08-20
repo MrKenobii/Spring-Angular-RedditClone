@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class MailService {
     private final JavaMailSender mailSender;
     private final MailContentBuilder mailContentBuilder;
-
+    @Async
     public void sendMail(NotificationEmail notificationEmail){
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
