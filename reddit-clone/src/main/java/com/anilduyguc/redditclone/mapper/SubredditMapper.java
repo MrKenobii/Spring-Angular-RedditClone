@@ -3,6 +3,7 @@ package com.anilduyguc.redditclone.mapper;
 import com.anilduyguc.redditclone.dto.SubredditDto;
 import com.anilduyguc.redditclone.model.Post;
 import com.anilduyguc.redditclone.model.Subreddit;
+import com.anilduyguc.redditclone.model.User;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,5 +23,6 @@ public interface SubredditMapper {
     @InheritInverseConfiguration
     @Mapping(target = "posts", ignore = true)
     @Mapping(target = "createdDate", expression = "java(java.time.Instant.now())")
-    Subreddit mapDtoToSubreddit(SubredditDto subredditDto);
+    @Mapping(target = "user", expression = "java(currentUser)")
+    Subreddit mapDtoToSubreddit(SubredditDto subredditDto, User currentUser);
 }
