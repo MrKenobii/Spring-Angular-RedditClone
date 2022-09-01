@@ -2,6 +2,7 @@ package com.anilduyguc.redditclone.service;
 
 import com.anilduyguc.redditclone.dto.CommentDto;
 import com.anilduyguc.redditclone.exceptions.PostNotFoundException;
+import com.anilduyguc.redditclone.exceptions.SpringRedditException;
 import com.anilduyguc.redditclone.mapper.CommentMapper;
 import com.anilduyguc.redditclone.model.Comment;
 import com.anilduyguc.redditclone.model.NotificationEmail;
@@ -61,5 +62,11 @@ public class CommentService {
                 .stream()
                 .map(commentMapper::mapToDto)
                 .collect(Collectors.toList());
+    }
+    public boolean containsSwearWords(String comment) {
+        if (comment.contains("shit") || comment.contains("damn")) {
+            throw new SpringRedditException("Comments contains unacceptable language");
+        }
+        return false;
     }
 }
