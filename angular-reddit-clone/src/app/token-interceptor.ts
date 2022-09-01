@@ -1,25 +1,30 @@
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { AuthService } from "./auth/shared/auth.service";
-import { LoginResponse } from './auth/login/login-response.payload';
+import { AuthService } from './auth/shared/auth.service';
 import { catchError, switchMap, take, filter } from 'rxjs/operators';
+import { LoginResponse } from './auth/login/login-response.payload';
 
 @Injectable({
     providedIn: 'root'
 })
 export class TokenInterceptor implements HttpInterceptor {
+
     isTokenRefreshing = false;
     refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject(null);
-    constructor(public authService: AuthService){
 
-    }
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        const jwtToken = this.authService.getJwtToken();
-        if (jwtToken){
-            this.addToken(req ,jwtToken);
+    constructor(public authService: AuthService) { }
+
+    intercept(req: HttpRequest<any>, next: HttpHandler):
+        Observable<HttpEvent<any>> {
+
+        if (req.url.indexOf('refresh') !== -1 || req.url.indexOf('login') !== -1) {
+            return next.handle(req);
         }
-        return next.handle(this.addToken(req, jwtToken)).pipe(catchError(error => {
+        const jwtToken = this.authService.getJwtToken();
+
+        if (jwtToken) {
+            return next.handle(this.addToken(req, jwtToken)).pipe(catchError(error => {
                 if (error instanceof HttpErrorResponse
                     && error.status === 403) {
                     return this.handleAuthErrors(req, next);
@@ -27,7 +32,11 @@ export class TokenInterceptor implements HttpInterceptor {
                     return throwError(error);
                 }
             }));
+        }
+        return next.handle(req);
+
     }
+
     private handleAuthErrors(req: HttpRequest<any>, next: HttpHandler)
         : Observable<HttpEvent<any>> {
         if (!this.isTokenRefreshing) {
@@ -54,9 +63,12 @@ export class TokenInterceptor implements HttpInterceptor {
             );
         }
     }
+
     addToken(req: HttpRequest<any>, jwtToken: any) {
         return req.clone({
-            headers: req.headers.set('Authorization', 'Bearer ' + jwtToken)
+            headers: req.headers.set('Authorization',
+                'Bearer ' + jwtToken)
         });
     }
+
 }

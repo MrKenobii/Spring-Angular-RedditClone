@@ -15,7 +15,6 @@
     border-radius: 2px solid;
     color: #878A8C;
     opacity: 1;
-    text-decoration: none;
 }
 
 .btnCommments:hover{
@@ -31,7 +30,6 @@
 
 .posturl, .postname{    
     color: black;
-    text-decoration: none;
 }
 
 .subreddit-text{
@@ -40,7 +38,4 @@
 
 .post-text{
     margin-top: 10px;
-}
-.username {
-    text-decoration: none;
 }
